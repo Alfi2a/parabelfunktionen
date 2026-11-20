@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Potenzgleichungen – Entdecker-Version</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Cabin:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6EFE0; --paper:#FBF7EE; --green:#6AAE72; --green-d:#3F7F49; --mint:#C2DFC6;
+    --ink:#1E1B18; --muted:#5d574f; --red:#B8323A; --blue:#2F5E9E; --line:#d9cfba;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Cabin,Calibri,sans-serif;font-size:19px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 28px 60px 28px;border-right:14px solid var(--green);min-height:100vh;background:var(--cream)}
+  h1{font-family:Oswald,Impact,sans-serif;letter-spacing:.32em;text-align:center;font-size:clamp(28px,4.6vw,54px);margin:6px 0 4px}
+  .sub{text-align:center;color:var(--muted);margin:0 0 26px}
+  nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+  nav button{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--paper);padding:8px 18px;cursor:pointer;border-radius:999px}
+  nav button.on{background:var(--ink);color:var(--cream)}
+  section{display:none} section.on{display:block}
+  .box{background:var(--mint);padding:20px 24px;margin-bottom:20px}
+  .box h2{margin:0 0 8px;font-size:24px}
+  .grid{display:grid;grid-template-columns:1.35fr 1fr;gap:22px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--paper);border:2px solid var(--line);padding:18px 20px}
+  canvas{width:100%;height:auto;display:block;background:#fff;border:2px solid var(--line)}
+  label{font-weight:700;display:block;margin-top:12px}
+  input[type=range]{width:100%;accent-color:var(--green-d)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nbtn{font:inherit;font-weight:700;width:46px;height:42px;border:2px solid var(--ink);background:#fff;cursor:pointer}
+  .nbtn.on{background:var(--green-d);color:#fff;border-color:var(--green-d)}
+  .eq{font-size:44px;font-weight:700;text-align:center;margin:6px 0 2px;font-family:"Cambria Math",Cambria,Georgia,serif}
+  .eq sup{font-size:.55em}
+  .pill{display:inline-block;padding:3px 12px;border-radius:999px;font-weight:700;font-size:15px}
+  .even{background:#e7d9f5;color:#4b2a7a} .odd{background:#fde3c8;color:#8a4a10}
+  .sol{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:28px;text-align:center;min-height:48px;margin:10px 0}
+  .hidden-sol{filter:blur(9px);user-select:none}
+  .big{font:inherit;font-weight:700;padding:10px 20px;border:none;background:var(--ink);color:var(--cream);cursor:pointer;border-radius:4px}
+  .big.alt{background:var(--green-d)}
+  .big.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+  table.cases{width:100%;border-collapse:collapse;font-size:16px;margin-top:10px}
+  table.cases th,table.cases td{border:1px solid var(--line);padding:7px 8px;text-align:center}
+  table.cases th{background:#efe7d4}
+  table.cases td{cursor:pointer;font-weight:700;font-size:18px;height:52px;background:#fff}
+  table.cases td.good{background:#d6eed9;color:var(--green-d)}
+  table.cases td.bad{background:#f6d3d6;color:var(--red)}
+  table.cases td.hit{outline:4px solid var(--blue);outline-offset:-4px}
+  .q{font-size:clamp(40px,7vw,78px);text-align:center;font-weight:700;font-family:"Cambria Math",Cambria,Georgia,serif;margin:18px 0}
+  .q sup{font-size:.55em}
+  .choices{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .choice{font:inherit;font-size:22px;font-weight:700;min-width:150px;padding:16px 10px;border:3px solid var(--ink);background:#fff;cursor:pointer}
+  .choice.right{background:var(--green);color:#fff;border-color:var(--green-d)}
+  .choice.wrong{background:#f3c9cc;border-color:var(--red)}
+  .feedback{text-align:center;min-height:70px;margin-top:16px;font-size:20px}
+  .score{text-align:center;color:var(--muted)}
+  .sort{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .item{background:#fff;border:2px solid var(--line);padding:14px;text-align:center}
+  .item .f{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:28px;font-weight:700;margin-bottom:10px}
+  .item .f sup{font-size:.6em}
+  .item button{font:inherit;font-size:15px;font-weight:700;padding:6px 10px;margin:3px;border:2px solid var(--ink);background:var(--paper);cursor:pointer}
+  .item.ok{border-color:var(--green-d);background:#eaf5ec}
+  .item.no{border-color:var(--red);background:#fbecee}
+  .item .why{font-size:15px;margin-top:8px;color:var(--muted);min-height:20px}
+  .hint{font-size:15px;color:var(--muted)}
+  .sub4{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .sub4 button{font:inherit;font-weight:700;border:2px solid var(--green-d);background:#fff;color:var(--green-d);padding:6px 14px;cursor:pointer}
+  .sub4 button.on{background:var(--green-d);color:#fff}
+  .pane{display:none}.pane.on{display:block}
+  .m{font-family:"Cambria Math",Cambria,Georgia,serif}
+  .m sup,.m sub{font-size:.62em}
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media (max-width:700px){.match{grid-template-columns:1fr}}
+  .cards{display:flex;flex-direction:column;gap:12px}
+  .mc{font-family:"Comic Sans MS","Segoe Print","Chalkboard",cursive;font-size:30px;padding:10px 18px;cursor:pointer;border:2px solid #a89a6a;text-align:center;transition:.15s;user-select:none}
+  .mc.eqc{background:#F3D9A0}.mc.ans{background:#B9CCDF;border-color:#6d87a3}
+  .mc.sel{outline:4px solid var(--ink);transform:scale(1.03)}
+  .mc.done{opacity:.55;cursor:default}
+  .mc.shake{animation:sh .35s}
+  @keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .pairs{margin-top:14px;font-size:22px}
+  .tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .task{background:#fff;border:2px solid var(--line);padding:14px 16px}
+  .task .h{font-size:24px;font-weight:700}
+  .task .steps{margin-top:8px;font-size:20px;line-height:1.7}
+  .task .steps div{display:none}.task .steps div.v{display:block}
+  .task button{font:inherit;font-size:15px;font-weight:700;padding:5px 12px;border:2px solid var(--green-d);background:var(--paper);color:var(--green-d);cursor:pointer;margin-top:8px}
+  .det{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .det .task{background:#F2EDCF;border-color:#d8cf9a}
+  .det .wrongsol{font-family:"Comic Sans MS","Segoe Print",cursive;color:#2b4f9a;font-size:24px}
+  .det .fix{display:none;margin-top:10px;font-size:18px;border-top:2px dashed #c9bf86;padding-top:8px}
+  .det .fix.v{display:block}
+  .teacher{border-left:5px solid var(--green-d);padding:8px 14px;background:var(--paper);font-size:16px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>POTENZGLEICHUNGEN</h1>
+  <p class="sub">x<sup>n</sup> = a &nbsp;·&nbsp; Wie viele Lösungen – und warum?</p>
+
+  <nav>
+    <button data-s="s1" class="on">① Entdecken</button>
+    <button data-s="s2">② Blitzrunde</button>
+    <button data-s="s3">③ Ist das eine Potenzgleichung?</button>
+    <button data-s="s4">④ Buch S. 126/127</button>
+  </nav>
+
+  <!-- 1 ENTDECKEN -->
+  <section id="s1" class="on">
+    <div class="box">
+      <h2>Die Idee: Lösungen sind Schnittpunkte</h2>
+      Die Lösungen von x<sup>n</sup> = a sind die x-Werte, an denen der Graph von <b style="color:var(--blue)">y = x<sup>n</sup></b> die waagerechte Gerade <b style="color:var(--red)">y = a</b> schneidet.
+      Erst <b>vermuten</b>, dann aufdecken!
+    </div>
+    <div class="grid">
+      <div class="card">
+        <canvas id="cv" width="760" height="560"></canvas>
+      </div>
+      <div class="card">
+        <label>Exponent n</label>
+        <div class="row" id="nrow"></div>
+        <label for="a">Rechte Seite a = <span id="aval"></span></label>
+        <input type="range" id="a" min="-50" max="100" step="1" value="64">
+        <div class="row" style="margin-top:6px">
+          <button class="big ghost" data-a="64">a = 64</button>
+          <button class="big ghost" data-a="0">a = 0</button>
+          <button class="big ghost" data-a="-27">a = −27</button>
+        </div>
+        <div class="eq" id="eq"></div>
+        <div style="text-align:center"><span class="pill" id="parity"></span></div>
+        <div class="sol" id="sol"></div>
+        <div class="row" style="justify-content:center">
+          <button class="big alt" id="toggle">Lösung aufdecken</button>
+        </div>
+        <div style="margin-top:16px;font-weight:700">Eure Forscher-Tabelle: Wie viele Lösungen gibt es?</div>
+        <div class="hint">Tippt auf ein Feld, um zwischen „?“, „keine“, „1“ und „2“ zu wechseln.</div>
+        <table class="cases" id="cases">
+          <tr><th></th><th>a &gt; 0</th><th>a = 0</th><th>a &lt; 0</th></tr>
+          <tr><th>n gerade</th><td data-c="e+" data-r="2">?</td><td data-c="e0" data-r="1">?</td><td data-c="e-" data-r="keine">?</td></tr>
+          <tr><th>n ungerade</th><td data-c="o+" data-r="1">?</td><td data-c="o0" data-r="1">?</td><td data-c="o-" data-r="1">?</td></tr>
+        </table>
+        <div class="row" style="justify-content:center;margin-top:10px">
+          <button class="big alt" id="check">Regel prüfen</button>
+          <button class="big ghost" id="clearT">Leeren</button>
+        </div>
+        <div class="hint" id="checkfb" style="text-align:center;margin-top:8px;font-size:17px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 BLITZRUNDE -->
+  <section id="s2">
+    <div class="box">
+      <h2>Blitzrunde: Wie viele Lösungen?</h2>
+      Nicht rechnen – nur entscheiden! Gerade oder ungerade? Vorzeichen von a? Danach: Lösung nennen.
+    </div>
+    <div class="card">
+      <div class="q" id="q"></div>
+      <div class="choices" id="choices">
+        <button class="choice" data-k="0">keine</button>
+        <button class="choice" data-k="1">genau 1</button>
+        <button class="choice" data-k="2">genau 2</button>
+      </div>
+      <div class="feedback" id="fb"></div>
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <button class="big" id="next">Nächste Gleichung →</button>
+      </div>
+      <p class="score" id="score"></p>
+    </div>
+  </section>
+
+  <!-- 3 SORTIEREN -->
+  <section id="s3">
+    <div class="box">
+      <h2>Potenzgleichung – ja oder nein?</h2>
+      Erinnerung: Eine Potenzgleichung besteht aus <b>nur einer Potenz der Unbekannten</b> und einer Konstanten. Aber Vorsicht: Manche lassen sich erst durch Umformen darauf bringen!
+    </div>
+    <div class="sort" id="sort"></div>
+    <div class="row" style="justify-content:center;margin-top:18px">
+      <button class="big ghost" id="reset3">Zurücksetzen</button>
+    </div>
+  </section>
+
+  <!-- 4 BUCH -->
+  <section id="s4">
+    <div class="sub4">
+      <button data-p="p4" class="on">Nr. 4 Im Kopf</button>
+      <button data-p="p5">Nr. 5 Zuordnen</button>
+      <button data-p="p6">Nr. 6 Lösungsmengen</button>
+      <button data-p="p7">Nr. 7 Fehlerdetektiv</button>
+      <button data-p="p9">Nr. 9 Rückwärts</button>
+    </div>
+
+    <div class="pane on" id="p4">
+      <div class="box"><h2>Nr. 4 – Bestimme die Lösungsmenge im Kopf.</h2>
+        Erst im Kopf lösen, dann die Karte antippen.</div>
+      <div class="tasks" id="tasks4"></div>
+    </div>
+
+    <div class="pane" id="p5">
+      <div class="box"><h2>Nr. 5 – Welche Lösungsmenge gehört zu welcher Gleichung?</h2>
+        Erst eine gelbe Gleichung antippen, dann die passende blaue Lösungsmenge.</div>
+      <div class="card">
+        <div class="match">
+          <div class="cards" id="eqcards"></div>
+          <div class="cards" id="anscards"></div>
+        </div>
+        <div class="pairs" id="pairs"></div>
+        <div class="row" style="margin-top:12px"><button class="big ghost" id="reset5">Neu mischen</button></div>
+      </div>
+    </div>
+
+    <div class="pane" id="p6">
+      <div class="box"><h2>Nr. 6 – Bestimme die Lösungsmenge.</h2>
+        Jeder Klick auf „Nächster Schritt“ deckt eine Zeile des Lösungswegs auf.</div>
+      <div class="tasks" id="tasks6"></div>
+      <div class="row" style="margin-top:14px"><button class="big ghost" id="hide6">Alle verdecken</button></div>
+    </div>
+
+    <div class="pane" id="p7">
+      <div class="box"><h2>Nr. 7 – Welche Fehler wurden hier gemacht?</h2>
+        Der Detektiv hat die Lösungen eines Mitschülers sichergestellt. Erklärt und korrigiert!</div>
+      <div class="det" id="det7"></div>
+    </div>
+
+    <div class="pane" id="p9">
+      <div class="box"><h2>Nr. 9 – Gib eine Gleichung der Form x<sup>n</sup> = b an …</h2>
+        Rückwärts denken! Es gibt jeweils viele richtige Antworten.</div>
+      <div class="tasks" id="tasks9"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ---------- helpers ----------
+const fmt = (v,d=2)=>{ if(Math.abs(v-Math.round(v))<1e-9) return String(Math.round(v)).replace('-','−');
+  return v.toFixed(d).replace('.',',').replace('-','−'); };
+const minus = s=>String(s).replace('-','−');
+function rootStr(n,a){ // n-th root of positive a, exact if possible
+  const r=Math.pow(a,1/n), R=Math.round(r);
+  if(Math.abs(Math.pow(R,n)-a)<1e-9) return {txt:String(R),val:R,exact:true};
+  return {txt:`<sup>${n}</sup>√${a} ≈ ${fmt(r)}`,val:r,exact:false};
+}
+
+// ---------- tabs ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.s));
+  if(b.dataset.s==='s1') draw();
+});
+
+// ---------- section 1 ----------
+let n=4, a=64, shown=false;
+const nrow=document.getElementById('nrow');
+for(let k=2;k<=7;k++){const b=document.createElement('button');b.className='nbtn'+(k===n?' on':'');b.textContent=k;
+  b.onclick=()=>{n=k;[...nrow.children].forEach(c=>c.classList.toggle('on',+c.textContent===k));update();};nrow.appendChild(b);}
+const aS=document.getElementById('a');
+aS.oninput=()=>{a=+aS.value;update();};
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{a=+b.dataset.a;aS.value=a;update();});
+document.getElementById('toggle').onclick=()=>{shown=!shown;update();};
+
+function solutions(n,a){
+  if(a===0) return {xs:[0],L:'L = {0}',key:(n%2?'o0':'e0')};
+  if(n%2===0){
+    if(a<0) return {xs:[],L:'L = { }',key:'e-'};
+    const r=rootStr(n,a); return {xs:[r.val,-r.val],L:`L = {${r.exact?r.txt:''}${r.exact?'; −'+r.txt:'±'+r.txt}}`.replace('{±','{ ±'),key:'e+'};
+  } else {
+    if(a>0){const r=rootStr(n,a);return {xs:[r.val],L:`L = {${r.txt}}`,key:'o+'};}
+    const r=rootStr(n,-a);
+    const t=r.exact?('−'+r.txt):`−<sup>${n}</sup>√${-a} ≈ −${fmt(r.val)}`;
+    return {xs:[-r.val],L:`L = {${t}}`,key:'o-'};
+  }
+}
+
+function update(){
+  document.getElementById('aval').textContent=minus(a);
+  document.getElementById('eq').innerHTML=`x<sup>${n}</sup> = ${minus(a)}`;
+  const p=document.getElementById('parity');
+  p.textContent=n%2?'n ist ungerade':'n ist gerade'; p.className='pill '+(n%2?'odd':'even');
+  const s=solutions(n,a);
+  const solEl=document.getElementById('sol');
+  solEl.innerHTML=s.L; solEl.classList.toggle('hidden-sol',!shown);
+  document.getElementById('toggle').textContent=shown?'Lösung verdecken':'Lösung aufdecken';
+  document.querySelectorAll('#cases td').forEach(td=>td.classList.toggle('hit',shown&&td.dataset.c===s.key));
+  draw(s);
+}
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+function draw(s){
+  s=s||solutions(n,a);
+  const W=cv.width,H=cv.height, small=Math.abs(a)<=5, xmin=small?-2.6:-4.2,xmax=-xmin;
+  const ymax=small?6:Math.max(12,a*1.3), ymin=small?-6:Math.min(-12,a*1.3);
+  const X=x=>(x-xmin)/(xmax-xmin)*W, Y=y=>H-(y-ymin)/(ymax-ymin)*H;
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='#eee6d6';ctx.lineWidth=1;ctx.font='15px Cabin, sans-serif';ctx.fillStyle='#8a8275';
+  for(let x=-4;x<=4;x++){ctx.beginPath();ctx.moveTo(X(x),0);ctx.lineTo(X(x),H);ctx.stroke(); if(x) ctx.fillText(minus(x),X(x)-5,Y(0)+18);}
+  const step=niceStep((ymax-ymin)/10);
+  for(let y=Math.ceil(ymin/step)*step;y<=ymax;y+=step){ctx.beginPath();ctx.moveTo(0,Y(y));ctx.lineTo(W,Y(y));ctx.stroke(); if(Math.abs(y)>1e-9) ctx.fillText(minus(Math.round(y)),X(0)+6,Y(y)-4);}
+  // axes
+  ctx.strokeStyle='#333';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,Y(0));ctx.lineTo(W,Y(0));ctx.moveTo(X(0),0);ctx.lineTo(X(0),H);ctx.stroke();
+  ctx.fillStyle='#333';ctx.font='bold 17px Cabin, sans-serif';ctx.fillText('x',W-16,Y(0)-8);ctx.fillText('y',X(0)+8,16);
+  // curve
+  ctx.strokeStyle='#2F5E9E';ctx.lineWidth=4;ctx.beginPath();let pen=false;
+  for(let px=0;px<=W;px++){const x=xmin+px/W*(xmax-xmin), y=Math.pow(x,n);
+    if(y>ymax*1.5||y<ymin*1.5){pen=false;continue;} if(!pen){ctx.moveTo(px,Y(y));pen=true;} else ctx.lineTo(px,Y(y));}
+  ctx.stroke();
+  ctx.fillStyle='#2F5E9E';ctx.font='bold 20px Cabin, sans-serif';
+  const lx=n%2?-3.7:-3.4; ctx.fillText(`y = x`,X(2.2),26); ctx.font='bold 13px Cabin';ctx.fillText(n,X(2.2)+52,16);
+  // line y=a
+  ctx.strokeStyle='#B8323A';ctx.lineWidth=3;ctx.setLineDash([10,7]);
+  ctx.beginPath();ctx.moveTo(0,Y(a));ctx.lineTo(W,Y(a));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#B8323A';ctx.font='bold 20px Cabin, sans-serif';ctx.fillText(`y = ${minus(a)}`,10,Y(a)-8);
+  // intersections
+  if(shown){ s.xs.forEach(x=>{ if(x<xmin||x>xmax) return;
+      ctx.strokeStyle='#3F7F49';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(X(x),Y(a));ctx.lineTo(X(x),Y(0));ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#3F7F49';ctx.beginPath();ctx.arc(X(x),Y(a),9,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(X(x),Y(0),6,0,7);ctx.fill();
+      ctx.font='bold 18px Cabin, sans-serif';const t='x ≈ '+fmt(x);ctx.fillText(t,X(x)-ctx.measureText(t).width/2,Y(0)+(a>=0?-12:32));
+    });
+    if(!s.xs.length){ctx.fillStyle='#B8323A';ctx.font='bold 24px Cabin, sans-serif';const t='kein Schnittpunkt!';ctx.fillText(t,W/2-ctx.measureText(t).width/2,Y(a)+36);}
+  }
+}
+function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(r)));const m=r/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;}
+update();
+
+// ---------- section 2 ----------
+let right=0,total=0,cur=null,answered=false;
+const pool=[]; // build nice tasks
+[[2,[4,9,16,25,36,49,64,81,100,121,144,-4,-25,-1,0,7]],[3,[8,27,64,125,-8,-27,-64,-125,-1000,0,1000]],
+ [4,[16,81,625,-16,-81,0,1]],[5,[32,-32,243,-1,100000]],[6,[64,-64,1]],[7,[128,-128]]].forEach(([n,as])=>as.forEach(a=>pool.push([n,a])));
+function nextQ(){
+  let c; do{c=pool[Math.floor(Math.random()*pool.length)];}while(cur&&c[0]===cur[0]&&c[1]===cur[1]);
+  cur=c;answered=false;
+  document.getElementById('q').innerHTML=`x<sup>${c[0]}</sup> = ${minus(c[1])}`;
+  document.getElementById('fb').innerHTML='';
+  document.querySelectorAll('.choice').forEach(b=>b.className='choice');
+}
+document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+  if(answered) return; answered=true; total++;
+  const [n,a]=cur, s=solutions(n,a), k=s.xs.length;
+  const ok=+b.dataset.k===k; if(ok) right++;
+  document.querySelectorAll('.choice').forEach(x=>{ if(+x.dataset.k===k) x.classList.add('right'); else if(x===b) x.classList.add('wrong'); });
+  const reason = a===0 ? 'a = 0 → nur x = 0.'
+    : n%2===0 ? (a>0?`n = ${n} ist gerade und a &gt; 0 → zwei Lösungen mit entgegengesetztem Vorzeichen.`:`n = ${n} ist gerade → x<sup>${n}</sup> ist nie negativ.`)
+    : `n = ${n} ist ungerade → genau eine Lösung mit dem Vorzeichen von a.`;
+  document.getElementById('fb').innerHTML=`<b>${ok?'Richtig! ':'Nicht ganz. '}</b>${reason}<br><span style="font-family:Cambria,Georgia,serif;font-size:24px">${s.L}</span>`;
+  document.getElementById('score').textContent=`${right} von ${total} richtig`;
+});
+document.getElementById('next').onclick=nextQ;
+nextQ();
+
+// ---------- section 3 ----------
+const items=[
+ ['x<sup>3</sup> = 27','ja','Eine Potenz von x, eine Zahl. L = {3}'],
+ ['x<sup>2</sup> + x<sup>4</sup> = 64','nein','Zwei verschiedene Potenzen von x → Polynomgleichung (Oberstufe).'],
+ ['2x<sup>5</sup> = 64','ja','Erst durch 2 teilen: x<sup>5</sup> = 32 → L = {2}'],
+ ['5<sup>x</sup> = 125','nein','x steht im Exponenten → Exponentialgleichung.'],
+ ['x<sup>2</sup> − 9 = 0','ja','+9 rechnen: x<sup>2</sup> = 9 → L = {−3; 3}'],
+ ['x<sup>3</sup> = 2x','nein','x kommt in zwei Potenzen vor (x<sup>3</sup> und x<sup>1</sup>).'],
+ ['x<sup>4</sup> + 16 = 0','ja','x<sup>4</sup> = −16 → Potenzgleichung, aber L = { }'],
+ ['3 · x<sup>6</sup> − 1 = 191','ja','x<sup>6</sup> = 64 → L = {−2; 2}'],
+];
+function buildSort(){
+  const box=document.getElementById('sort');box.innerHTML='';
+  items.forEach(([f,ans,why])=>{
+    const d=document.createElement('div');d.className='item';
+    d.innerHTML=`<div class="f">${f}</div><button data-v="ja">✔ Potenzgleichung</button><button data-v="nein">✘ keine</button><div class="why"></div>`;
+    d.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      const ok=b.dataset.v===ans; d.className='item '+(ok?'ok':'no');
+      d.querySelector('.why').innerHTML=(ok?'<b>Stimmt.</b> ':'<b>Hm – nochmal hinschauen.</b> ')+why;
+    });
+    box.appendChild(d);
+  });
+}
+document.getElementById('reset3').onclick=buildSort;
+buildSort();
+
+// ---------- section 4: Buch ----------
+document.querySelectorAll('.sub4 button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.sub4 button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));
+});
+const fr=(z,n)=>`<sup>${z}</sup>&frasl;<sub>${n}</sub>`;
+
+// Nr. 5
+const pairs5=[['x<sup>5</sup> = 243','3','L = {3}'],['x<sup>6</sup> = −729','{ }','L = { } – gerader Exponent, negative Zahl'],
+  ['x<sup>7</sup> = 0','0','L = {0}'],['x<sup>4</sup> = 81','{−3; 3}','L = {−3; 3}'],['x<sup>3</sup> = −27','−3','L = {−3}']];
+let sel5=null;
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+function build5(){
+  const E=document.getElementById('eqcards'),A=document.getElementById('anscards'),P=document.getElementById('pairs');
+  E.innerHTML='';A.innerHTML='';P.innerHTML='';sel5=null;
+  shuffle(pairs5.map((p,i)=>i)).forEach(i=>{const d=document.createElement('div');d.className='mc eqc';d.innerHTML=pairs5[i][0];d.dataset.i=i;
+    d.onclick=()=>{if(d.classList.contains('done'))return;E.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));d.classList.add('sel');sel5=d;};E.appendChild(d);});
+  shuffle(pairs5.map((p,i)=>i)).forEach(i=>{const d=document.createElement('div');d.className='mc ans';d.innerHTML=pairs5[i][1];d.dataset.i=i;
+    d.onclick=()=>{if(!sel5||d.classList.contains('done'))return;
+      if(sel5.dataset.i===d.dataset.i){sel5.classList.remove('sel');sel5.classList.add('done');d.classList.add('done');
+        P.innerHTML+=`<div><b class="m">${pairs5[i][0]}</b> &nbsp;→&nbsp; ${pairs5[i][2]}</div>`;sel5=null;
+        if(P.children.length===5)P.innerHTML+='<div style="color:var(--green-d);font-weight:700;margin-top:6px">Alle zugeordnet! 🎉</div>';}
+      else{d.classList.add('shake');setTimeout(()=>d.classList.remove('shake'),400);}};A.appendChild(d);});
+}
+document.getElementById('reset5').onclick=build5; build5();
+
+// Nr. 6
+const t6=[
+ ['a','x<sup>4</sup> = 12',['n = 4 gerade, 12 &gt; 0 → zwei Lösungen','x = ±<sup>4</sup>√12 ≈ ±1,86','L = {−<sup>4</sup>√12; <sup>4</sup>√12}']],
+ ['b','x<sup>7</sup> = '+fr(1,3),['n = 7 ungerade → eine Lösung','x = <sup>7</sup>√('+fr(1,3)+') ≈ 0,85','L = {<sup>7</sup>√('+fr(1,3)+')}']],
+ ['c','3x<sup>3</sup> + 18 = 0',['3x<sup>3</sup> = −18 &nbsp;| : 3','x<sup>3</sup> = −6','x = −<sup>3</sup>√6 ≈ −1,82','L = {−<sup>3</sup>√6}']],
+ ['d','3x<sup>4</sup> + 48 = 2',['3x<sup>4</sup> = −46 &nbsp;| : 3','x<sup>4</sup> = −'+fr(46,3),'gerader Exponent, negative rechte Seite!','L = { }']],
+ ['e','−6x<sup>5</sup> + 192 = 0',['−6x<sup>5</sup> = −192 &nbsp;| : (−6)','x<sup>5</sup> = 32','x = <sup>5</sup>√32 = 2','L = {2}']],
+ ['f','(x + 1)<sup>3</sup> = 64',['Klammer als Ganzes: x + 1 = <sup>3</sup>√64 = 4','x = 3','L = {3}']],
+ ['g','(x − 4)<sup>3</sup> − 27 = 0',['(x − 4)<sup>3</sup> = 27','x − 4 = 3','x = 7','L = {7}']],
+ ['h','3(x − 10)<sup>4</sup> = 12',['(x − 10)<sup>4</sup> = 4','x − 10 = ±<sup>4</sup>√4 = ±√2','x = 10 ± √2 ≈ 8,59 bzw. 11,41','L = {10 − √2; 10 + √2}']],
+];
+function build6(showAll){
+  const box=document.getElementById('tasks6');box.innerHTML='';
+  t6.forEach(([k,eq,steps])=>{
+    const d=document.createElement('div');d.className='task';
+    d.innerHTML=`<div class="h m">${k}) &nbsp;${eq}</div><div class="steps m">${steps.map(s=>`<div${showAll?' class="v"':''}>${s}</div>`).join('')}</div><button>Nächster Schritt</button>`;
+    const btn=d.querySelector('button');
+    const upd=()=>{const hid=d.querySelectorAll('.steps div:not(.v)').length;btn.textContent=hid?'Nächster Schritt':'Verdecken';};
+    btn.onclick=()=>{const nx=d.querySelector('.steps div:not(.v)');if(nx)nx.classList.add('v');else d.querySelectorAll('.steps div').forEach(x=>x.classList.remove('v'));upd();};
+    upd();box.appendChild(d);
+  });
+}
+document.getElementById('hide6').onclick=()=>build6(false);
+build6(false);
+
+// Nr. 7
+const t7=[
+ ['a','x<sup>5</sup> = −7','L = {(−7)<sup>1/6</sup>}',
+  'Zwei Fehler: Der Exponent muss <b>1/5</b> heißen, nicht 1/6. Und für negative Zahlen ist a<sup>1/n</sup> nicht definiert – man zieht das Minus heraus.',
+  'L = {−<sup>5</sup>√7} ≈ {−1,48}'],
+ ['b','x<sup>4</sup> = 1,7','L = {1,7<sup>1/4</sup>}',
+  'Gerader Exponent und rechte Seite positiv → es gibt <b>zwei</b> Lösungen. Die negative fehlt.',
+  'L = {−1,7<sup>1/4</sup>; 1,7<sup>1/4</sup>} ≈ {−1,14; 1,14}'],
+ ['c','2x<sup>3</sup> − 8 = 10','L = {9<sup>1/3</sup>; −9<sup>1/3</sup>}',
+  'Umformung stimmt (x<sup>3</sup> = 9), aber bei <b>ungeradem</b> Exponenten gibt es nur eine Lösung: (−<sup>3</sup>√9)<sup>3</sup> = −9 ≠ 9.',
+  'L = {9<sup>1/3</sup>} ≈ {2,08}'],
+ ['d','(x − 5)<sup>5</sup> = −1024','L = { }',
+  'Bei <b>ungeradem</b> Exponenten hat auch eine negative rechte Seite eine Lösung: x − 5 = −<sup>5</sup>√1024 = −4.',
+  'L = {1}'],
+];
+const det=document.getElementById('det7');
+t7.forEach(([k,eq,wrong,why,right])=>{
+  const d=document.createElement('div');d.className='task';
+  d.innerHTML=`<div class="wrongsol">${k}) ${eq}<br>&nbsp;&nbsp;&nbsp;${wrong}</div>
+   <button>🔍 Fall aufklären</button>
+   <div class="fix"><div>${why}</div><div class="m" style="font-size:22px;margin-top:6px;color:var(--green-d);font-weight:700">Richtig: ${right}</div></div>`;
+  d.querySelector('button').onclick=()=>d.querySelector('.fix').classList.toggle('v');
+  det.appendChild(d);
+});
+
+// Nr. 9
+const t9=[
+ ['a','L = {−3; 3}','gerader Exponent, b &gt; 0','z.B. x<sup>2</sup> = 9 &nbsp;oder&nbsp; x<sup>4</sup> = 81'],
+ ['b','L = {−5}','ungerader Exponent, b &lt; 0','z.B. x<sup>3</sup> = −125 &nbsp;oder&nbsp; x<sup>5</sup> = −3125'],
+ ['c','L = {0}','b = 0, Exponent egal','z.B. x<sup>7</sup> = 0'],
+ ['d','L = { }','gerader Exponent, b &lt; 0','z.B. x<sup>2</sup> = −1 &nbsp;oder&nbsp; x<sup>6</sup> = −5'],
+];
+const b9=document.getElementById('tasks9');
+t9.forEach(([k,L,hint,ans])=>{
+  const d=document.createElement('div');d.className='task';
+  d.innerHTML=`<div class="h m">${k}) &nbsp;${L}</div><div class="steps m"><div>Tipp: ${hint}</div><div>${ans}</div></div><button>Tipp</button>`;
+  const btn=d.querySelector('button');
+  btn.onclick=()=>{const nx=d.querySelector('.steps div:not(.v)');if(nx){nx.classList.add('v');btn.textContent=d.querySelector('.steps div:not(.v)')?'Beispiel zeigen':'Verdecken';}
+    else{d.querySelectorAll('.steps div').forEach(x=>x.classList.remove('v'));btn.textContent='Tipp';}};
+  b9.appendChild(d);
+});
+
+// ---------- Forscher-Tabelle ----------
+const cyc=['?','keine','1','2'];
+document.querySelectorAll('#cases td').forEach(td=>td.onclick=()=>{
+  td.textContent=cyc[(cyc.indexOf(td.textContent)+1)%cyc.length];
+  td.classList.remove('good','bad');document.getElementById('checkfb').textContent='';
+});
+document.getElementById('check').onclick=()=>{
+  let ok=0,empty=0;
+  document.querySelectorAll('#cases td').forEach(td=>{
+    td.classList.remove('good','bad');
+    if(td.textContent==='?'){empty++;return;}
+    const g=td.textContent===td.dataset.r; td.classList.add(g?'good':'bad'); if(g)ok++;
+  });
+  const fb=document.getElementById('checkfb');
+  if(empty===6) fb.textContent='Füllt zuerst die Tabelle aus!';
+  else if(ok===6) fb.innerHTML='<b style="color:var(--green-d)">Alles richtig! Könnt ihr eure Regel auch in einem Satz formulieren?</b>';
+  else fb.textContent=`${ok} von 6 Feldern richtig${empty?`, ${empty} noch offen`:''}. Rote Felder nochmal am Graphen überprüfen!`;
+};
+document.getElementById('clearT').onclick=()=>{document.querySelectorAll('#cases td').forEach(td=>{td.textContent='?';td.classList.remove('good','bad');});document.getElementById('checkfb').textContent='';};
+
+// ---------- Nr. 3 + 4 ----------
+const t4=[['a','x<sup>3</sup> = 216','L = {6}'],['b','x<sup>3</sup> = −1000','L = {−10}'],['c','x<sup>5</sup> = 100 000','L = {10}'],
+ ['d','x<sup>6</sup> = 64','L = {−2; 2}'],['e','x<sup>7</sup> = −1','L = {−1}'],['f','−x<sup>5</sup> = 32','x<sup>5</sup> = −32 → L = {−2}'],
+ ['g','8x<sup>3</sup> = −1','x<sup>3</sup> = −'+fr(1,8)+' → L = {−'+fr(1,2)+'}'],['h','x<sup>4</sup> − 81 = 0','x<sup>4</sup> = 81 → L = {−3; 3}'],
+ ['i','5x<sup>4</sup> = 405','x<sup>4</sup> = 81 → L = {−3; 3}'],['j','6x<sup>6</sup> = 0','x<sup>6</sup> = 0 → L = {0}']];
+const b4=document.getElementById('tasks4');
+t4.forEach(([k,eq,L])=>{
+  const d=document.createElement('div');d.className='task';d.style.cursor='pointer';
+  d.innerHTML=`<div class="h m">${k}) &nbsp;${eq}</div><div class="steps m"><div>${L}</div></div><div class="hint">antippen zum Aufdecken</div>`;
+  d.onclick=()=>{const x=d.querySelector('.steps div');x.classList.toggle('v');d.querySelector('.hint').style.display=x.classList.contains('v')?'none':'';};
+  b4.appendChild(d);
+});
+</script>
+</body>
+  </html>
